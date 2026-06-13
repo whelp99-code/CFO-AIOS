@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 노션 프로젝트 DB
+model Project {
+  id        String   @id @default(cuid())
+  notionId  String?  @unique // 노션 페이지 ID
+  name      String
+  status    String   // 진행전, 진행중, 완료, 보류
+  client    String?
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  invoices  Invoice[]
+  expenses  Expense[]
+  cashflows Cashflow[]
+}
+
+// 노션 미수금/입금관리 DB
+model Invoice {
+  id          String    @id @default(cuid())
+  notionId    String?   @unique
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id])
+  
+  supplierCost  Float?    // 공급가액
+  depositAmount   Float?    // 입금액
+  depositStatus   String    // 미수, 부분, 완료
+  depositDate     DateTime? // 입금일
+  memo            String?
+  buyer           String?   // 거래처
+  
+  // Rollup fields (Calculated)
+  rolledClient  String?   // 거래처 (rollup)
+  rolledDate    DateTime? // 일자 (rollup)
+  vat         Float?    // VAT (formula)
+  total       Float?    // 합계 (formula)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// 노션 매입/비용 DB
+model Expense {
+  id          String    @id @default(cuid())
+  notionId    String?   @unique
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id])
+  
+  expenseName String    // 지출명
+  supplierCost Float?   // 공급가액
+  category    String    // 구분: 기타, 세무 보험, 급여, 판관비, 원가(매입)
+  vendor      String?   // 매입처
+  date        DateTime? // 일자
+  proofType   String?   // 증빙: 없음, 간이영수증, 현금영수증, 카드전표, 전자세금계산서
+  paymentMethod String? // 결재수단: 현금, 개인카드(정산), 법인통장, 법인카드
+  isPaid      Boolean   @default(false) // 납입여부
+  attachment  String?   // 첨부파일
+  
+  // Calculated
+  vat         Float?    // VAT (formula)
+  total       Float?    // 합계 (formula)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// 노션 자금흐름 DB
+model Cashflow {
+  id          String    @id @default(cuid())
+  notionId    String?   @unique
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id])
+  
+  counterparty String   // 거래처 (title)
+  amount       Float    // 금액
+  type         String   // 유형: 기타, 이체, 세금, 급여지급, 비용지급, 매입지급, 매출입금
+  outAccount   String?  // 출금계좌: 기타, 개인카드, 법인카드, 법인통장
+  inAccount    String?  // 입금계좌: 기타, 법인통장
+  date         DateTime? // 일자
+  memo         String?
+  cashChange   Float?   // 현금변동 (formula)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// 노션 연동 설정
+model NotionSource {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // database, page
+  databaseId  String?  @unique
+  lastSync    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

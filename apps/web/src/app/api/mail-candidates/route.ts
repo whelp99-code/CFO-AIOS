@@ -1,0 +1,48 @@
+import {
+  generateMailDerivedCandidates,
+  listMailDerivedCandidates,
+} from "@ai-portal/automation/mail-candidates";
+import { NextResponse } from "next/server";
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const status = searchParams.get("status") ?? undefined;
+  const candidateType = searchParams.get("type") ?? undefined;
+  const limit = Number(searchParams.get("limit") ?? "100");
+
+  const candidates = await listMailDerivedCandidates({
+    status: status as
+      | "needs_revalidation"
+      | "proposed"
+      | "approved"
+      | "rejected"
+      | "converted"
+      | "knowledge_only"
+      | undefined,
+    candidateType: candidateType as
+      | "customer"
+      | "partner"
+      | "task"
+      | "opportunity"
+      | "poc"
+      | undefined,
+    limit: Number.isFinite(limit) ? limit : 100,
+  });
+
+  return NextResponse.json({ candidates });
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json().catch(() => ({}));
+    const result = await generateMailDerivedCandidates({
+      limit: Number(body.limit ?? 1200),
+    });
+    return NextResponse.json(result, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "generate_failed" },
+      { status: 400 },
+    );
+  }
+}
