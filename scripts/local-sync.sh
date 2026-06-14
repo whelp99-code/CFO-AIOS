@@ -18,11 +18,16 @@ is_cloud_vm() {
   [[ -d /workspace/.git ]] && [[ "$REPO_ROOT" == /workspace* ]]
 }
 
-# git pull 전: 추적되지 않은 pnpm-lock.yaml 등이 병합을 막는 경우 정리
+# git pull 전: 로컬 변경/미추적 파일로 pull이 막히는 경우 정리
 prepare_git_pull() {
   if [[ -f pnpm-lock.yaml ]] && ! git ls-files --error-unmatch pnpm-lock.yaml &>/dev/null; then
     echo "⚠️  추적되지 않은 pnpm-lock.yaml 제거 후 pull (원격 lockfile 사용)"
     rm -f pnpm-lock.yaml
+  fi
+
+  if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
+    echo "⚠️  로컬 변경 감지 → stash 후 pull (복구: git stash pop)"
+    git stash push -u -m "local-sync auto-stash $(date +%Y%m%d-%H%M%S)" || true
   fi
 }
 

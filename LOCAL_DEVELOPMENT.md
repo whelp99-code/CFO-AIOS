@@ -54,7 +54,34 @@ git pull origin main
 pnpm install
 ```
 
-또는 `./scripts/local-sync.sh` (자동 정리 후 pull).
+## git pull 실패: 로컬 파일 변경 (예: main.ts)
+
+```
+error: 다음 파일의 로컬 변경 사항을 병합 때문에 덮어 쓰게 됩니다: apps/api/src/main.ts
+```
+
+**방법 A — 원격 버전으로 맞추기 (권장):**
+
+```bash
+git checkout -- apps/api/src/main.ts
+git pull origin main
+pnpm install
+```
+
+**방법 B — 변경 보관 후 pull:**
+
+```bash
+git stash push -u -m "before pull"
+git pull origin main
+pnpm install
+# 필요하면: git stash pop
+```
+
+**방법 C — 스크립트 (stash 자동):**
+
+```bash
+./scripts/local-sync.sh
+```
 
 ## 문제 해결
 
