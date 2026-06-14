@@ -1,0 +1,18 @@
+{
+  "name": "cfo-aios",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CFO-AIOS monorepo — local workspace: /Users/jmpark/Documents/Playground/CFO-AI",
+  "scripts": {
+    "dev:api": "pnpm --filter @cfo/api dev",
+    "dev:web": "pnpm --filter @ai-portal/web dev",
+    "dev": "pnpm run dev:api & pnpm run dev:web",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "local:sync": "bash scripts/local-sync.sh"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
