@@ -18,11 +18,20 @@ is_cloud_vm() {
   [[ -d /workspace/.git ]] && [[ "$REPO_ROOT" == /workspace* ]]
 }
 
+# git pull 전: 추적되지 않은 pnpm-lock.yaml 등이 병합을 막는 경우 정리
+prepare_git_pull() {
+  if [[ -f pnpm-lock.yaml ]] && ! git ls-files --error-unmatch pnpm-lock.yaml &>/dev/null; then
+    echo "⚠️  추적되지 않은 pnpm-lock.yaml 제거 후 pull (원격 lockfile 사용)"
+    rm -f pnpm-lock.yaml
+  fi
+}
+
 sync_repo() {
   local root="$1"
   cd "$root"
 
   echo "📍 Workspace: $root"
+  prepare_git_pull
   echo "⬇️  Pulling origin/main..."
   git fetch origin
   git pull origin main

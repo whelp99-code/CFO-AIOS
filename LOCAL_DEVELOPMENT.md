@@ -37,6 +37,25 @@ CFO_API_URL=http://localhost:4000/api
 NOTION_EXPORT_DIR=/path/to/notion-export pnpm --filter @cfo/api notion:import-csv
 ```
 
+## git pull 실패: pnpm-lock.yaml
+
+로컬에 **추적되지 않은** `pnpm-lock.yaml`이 있으면 pull이 중단됩니다:
+
+```
+error: 병합 때문에 추적하지 않는 다음 작업 폴더의 파일을 덮어씁니다: pnpm-lock.yaml
+```
+
+**해결 (Mac 터미널):**
+
+```bash
+cd /Users/jmpark/Documents/Playground/CFO-AI
+rm -f pnpm-lock.yaml
+git pull origin main
+pnpm install
+```
+
+또는 `./scripts/local-sync.sh` (자동 정리 후 pull).
+
 ## 문제 해결
 
 | 증상 | 해결 |
