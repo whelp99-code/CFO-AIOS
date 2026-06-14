@@ -30,11 +30,19 @@ export default async function DashboardPage() {
 
   if (error) {
     return (
-      <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm">
+      <div
+        className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm"
+        style={{ background: "#fffbeb", border: "1px solid #fde68a", color: "#18181b" }}
+      >
         <p className="font-medium">CFO API에 연결할 수 없습니다</p>
         <p className="mt-1 text-zinc-600">{error}</p>
         <p className="mt-2 text-zinc-500">
-          PostgreSQL + <code className="rounded bg-white px-1">pnpm dev:api</code> 실행 후 새로고침하세요.
+          1) <code className="rounded bg-white px-1">pnpm dev:api</code> (포트 4000)
+          <br />
+          2) <code className="rounded bg-white px-1">pnpm dev:web</code> (포트 5555)
+          <br />
+          3) <code className="rounded bg-white px-1">.env</code>에{" "}
+          <code>CFO_API_URL=http://127.0.0.1:4000/api</code>
         </p>
       </div>
     );
