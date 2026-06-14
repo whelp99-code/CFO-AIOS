@@ -104,3 +104,131 @@ model NotionSource {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// ========== CFO 추가 모듈 ==========
+
+// 이중부기 원장 (계정과목별 거래)
+model LedgerEntry {
+  id          String   @id @default(cuid())
+  date        DateTime
+  description String
+  debitAccount  String   // 차변 계정
+  creditAccount String   // 대변 계정
+  amount      Float
+  reference   String?  // 원본 거래 ID (Invoice/Expense/Cashflow)
+  referenceType String? // invoice, expense, cashflow
+  memo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+  @@index([debitAccount])
+  @@index([creditAccount])
+}
+
+// 구독 추적 (SaaS/정기 비용)
+model Subscription {
+  id          String   @id @default(cuid())
+  name        String
+  vendor      String?
+  amount      Float
+  currency    String   @default("KRW")
+  cycle       String   // monthly, yearly, weekly
+  category    String?  // 서버, SaaS, 보험, 통신, 기타
+  nextBillingDate DateTime
+  paymentMethod String?
+  isActive    Boolean  @default(true)
+  notifyDaysBefore Int  @default(7) // 갱신 며칠 전 알림
+  memo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([nextBillingDate])
+  @@index([isActive])
+}
+
+// 월 마감 기록
+model MonthClose {
+  id          String   @id @default(cuid())
+  year        Int
+  month       Int      // 1~12
+  status      String   // pending, in_progress, completed
+  startedAt   DateTime?
+  completedAt DateTime?
+  totalRevenue Float   @default(0)
+  totalExpense Float   @default(0)
+  netIncome   Float    @default(0)
+  uncategorizedCount Int @default(0)
+  notes       String?
+  reportUrl   String?  // PDF 보고서 경로
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([year, month])
+  @@index([status])
+}
+
+// AI CFO 챗봇 대화 이력
+model ChatSession {
+  id        String   @id @default(cuid())
+  title     String   @default("새 대화")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages  ChatMessage[]
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role      String   // user, assistant, system, tool
+  content   String
+  toolName  String?  // 사용된 tool
+  toolArgs  String?  // JSON 문자열
+  toolResult String? // JSON 문자열
+  createdAt DateTime @default(now())
+
+  @@index([sessionId, createdAt])
+}
+
+// 팝빌 (세금계산서) 발행 이력
+model TaxInvoice {
+  id          String   @id @default(cuid())
+  invoiceId   String?  // 연결된 Invoice ID
+  projectId   String?
+  direction   String   // sales(매출), purchase(매입)
+  ntsConfirmNum String? // 국세청 승인번호
+  status      String   // draft, requested, transmitted, failed
+  supplierCorpNum String  // 공급자 사업자번호
+  supplierName String
+  buyerCorpNum   String  // 공급받는자 사업자번호
+  buyerName     String
+  supplyAmount  Float   // 공급가액
+  vatAmount     Float   // 세액
+  totalAmount   Float   // 합계
+  issueDate     DateTime
+  memo          String?
+  rawResponse   String? // 팝빌 원본 응답
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([issueDate])
+}
+
+// CODEF (금융) 연동 계정
+model FinanceAccount {
+  id          String   @id @default(cuid())
+  type        String   // bank, card
+  organization String  // 금융기관 코드 (004:KB, 011:NH 등)
+  accountName String   // 표시용 이름
+  accountNum  String?  // 마스킹된 계좌번호
+  connectedId String?  // CODEF connectedId
+  isActive    Boolean  @default(true)
+  lastSyncedAt DateTime?
+  memo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type, isActive])
+}

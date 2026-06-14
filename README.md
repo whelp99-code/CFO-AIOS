@@ -59,17 +59,43 @@ npx tsx scripts/import-csv-to-prisma.ts
 
 ## 제공 모듈
 
-| 모듈 | 상태 | 비고 |
-|------|------|------|
-| 대시보드 (KPI) | ✅ | 실시간 매출/지출/순이익/잔고 |
+| 모듈 | 상태 | API |
+|------|------|-----|
+| 대시보드 (KPI / 현금흐름 예측 / 월별 추이) | ✅ | `GET /api/dashboard/{kpi,cashflow-forecast,monthly-trend}` |
 | 프로젝트 관리 | ✅ | 노션 1:1 매핑 |
 | 인보이스 (미수금) | ✅ | 노션 1:1 매핑 |
 | 매입/비용 | ✅ | 노션 1:1 매핑 |
 | 자금흐름 | ✅ | 노션 1:1 매핑 |
-| AI CFO 챗봇 | 🚧 | OpenAI Function Calling 연동 예정 |
-| 세금계산서 발행 | 🔌 | 팝빌 SDK 구조만, API 키 필요 |
-| 은행/카드 자동수집 | 🔌 | CODEF API 구조만, API 키 필요 |
-| 부가세 자동신고 | 🚧 | 데이터 수집 완료, 계산 로직 개발 중 |
+| 이중부기 원장 | ✅ | `GET /api/ledger/{entries,accounts,trial-balance,pnl}` |
+| 부가세 자동 계산 | ✅ | `GET /api/vat/calculate?year&half`, `POST /api/vat/income-tax` |
+| 종합소득세 예상 | ✅ | `POST /api/vat/income-tax` |
+| 구독 추적 | ✅ | `GET/POST/PATCH/DELETE /api/subscriptions` |
+| AI CFO 챗봇 | ✅ | `POST /api/chatbot/chat`, `POST /api/chatbot/sessions/:id/messages` |
+| 월 마감 자동화 | ✅ | `GET/POST /api/month-close/:year/:month/{start,complete}` |
+| 세금계산서 발행 (팝빌) | 🔌 | `POST /api/popbill/issue` (구조만, API 키 필요) |
+| 은행/카드 자동수집 (CODEF) | 🔌 | `POST /api/codef/accounts/connect` (구조만, API 키 필요) |
+
+### 챗봇 사용 예시
+
+```bash
+# 자연어 질문
+curl -X POST http://localhost:4000/api/chatbot/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"이번 달 매출 얼마야?"}'
+
+# 세션 기반 대화
+curl -X POST http://localhost:4000/api/chatbot/sessions -H 'Content-Type: application/json' -d '{}'
+curl -X POST http://localhost:4000/api/chatbot/sessions/<id>/messages \
+  -H 'Content-Type: application/json' -d '{"content":"미수금 인보이스 보여줘"}'
+```
+
+### 부가세 계산 예시
+
+```bash
+curl http://localhost:4000/api/vat/calculate?year=2026&half=1
+curl -X POST http://localhost:4000/api/vat/income-tax \
+  -H 'Content-Type: application/json' -d '{"taxableBase": 50000000}'
+```
 
 ## 환경 변수
 
