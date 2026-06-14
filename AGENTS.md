@@ -2,42 +2,29 @@
 
 ## Primary workspace (local)
 
-**Canonical development path:**
-
 ```
 /Users/jmpark/Documents/Playground/CFO-AI
 ```
 
-- Run installs, dev servers, DB migrations, and tests on the **local Mac path** above.
-- The Cloud Agent VM (`/workspace`) is a Git mirror only — do not treat it as the source of truth for `.env`, `node_modules`, or `packages/`.
-- Sync via Git: `git pull origin main` (local) ↔ push from Cloud Agent.
-
-## Monorepo layout
+## Monorepo
 
 ```
 CFO-AI/
-├── apps/
-│   ├── api/    # NestJS CFO backend (@cfo/api) — port 4000
-│   └── web/    # Next.js portal (@ai-portal/web) — port 3000
-├── packages/   # @ai-portal/* workspace packages (local only if not in remote)
-├── .env        # repo-root env (DATABASE_URL, API keys)
-└── pnpm-workspace.yaml
+├── apps/api/   @cfo/api  — NestJS CFO API (:4000)
+├── apps/web/   @cfo/web  — Next.js CFO UI (:3000)
+└── docs/       ADR-001 (Option A)
 ```
 
-## Local dev commands
+## Commands
 
 ```bash
-cd /Users/jmpark/Documents/Playground/CFO-AI
 pnpm install
-cp env.example.txt .env   # edit DATABASE_URL etc.
-
-cd apps/api && pnpm db:generate && pnpm db:push && pnpm dev
-cd apps/web && pnpm dev
+pnpm db:push        # or pnpm db:migrate with PostgreSQL
+pnpm dev            # turbo: api + web
+pnpm dev:api
+pnpm dev:web
 ```
 
-## CFO API integration
+Web calls API via `CFO_API_URL` (server) and BFF `/api/cfo/*`.
 
-- Web CFO screens should call `http://localhost:4000/api` (or `CFO_API_URL` from env).
-- Notion CSV import: `cd apps/api && pnpm notion:import-csv`
-
-See [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md) for first-time setup and sync steps.
+See [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md) and [docs/ADR-001-cfo-ui-architecture.md](./docs/ADR-001-cfo-ui-architecture.md).

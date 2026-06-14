@@ -1,24 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-
-import { TooltipProvider } from "@/components/ui/tooltip";
-
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "AI Automation Work Portal",
-  description:
-    "AI업무포탈 with an embedded development automation kernel.",
+  title: "CFO-AIOS",
+  description: "1인기업 대표를 위한 AI CFO 비서",
 };
 
 export default function RootLayout({
@@ -27,13 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <TooltipProvider>{children}</TooltipProvider>
-      </body>
+    <html lang="ko">
+      <body className="min-h-screen antialiased">{children}</body>
     </html>
   );
 }
