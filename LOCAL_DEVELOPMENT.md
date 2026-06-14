@@ -16,19 +16,30 @@ Cloud Agent VM과 Mac 로컬 저장소를 연동하는 가이드입니다.
 
 ## 1. 최초 연동 (Mac에서 1회)
 
-터미널에서:
+> **주의:** 아래 명령은 **Mac Terminal.app** 또는 **Cursor Desktop → Local 터미널**에서 실행하세요.  
+> Cloud Agent 터미널(`workspace $` 프롬프트)에서는 Mac 경로(`/Users/jmpark/...`)에 접근할 수 없습니다.
+
+### A. 저장소가 아직 없는 경우 (처음)
+
+Mac 터미널:
 
 ```bash
-# 이미 클론되어 있다면 pull만
+mkdir -p /Users/jmpark/Documents/Playground
+git clone https://github.com/whelp99-code/CFO-AIOS.git /Users/jmpark/Documents/Playground/CFO-AI
 cd /Users/jmpark/Documents/Playground/CFO-AI
-git remote -v   # origin → whelp99-code/cfo-aios 확인
-
-git fetch origin
-git pull origin main
-
-# 의존성 + DB
-pnpm install
+./scripts/local-sync.sh
 cp env.example.txt .env    # DATABASE_URL, API 키 입력
+cd apps/api && pnpm db:push
+```
+
+### B. 이미 클론되어 있는 경우
+
+```bash
+cd /Users/jmpark/Documents/Playground/CFO-AI
+git remote -v   # origin → whelp99-code/CFO-AIOS 확인
+git pull origin main
+./scripts/local-sync.sh
+cp env.example.txt .env    # 최초 1회
 cd apps/api && pnpm db:generate && pnpm db:push
 ```
 
