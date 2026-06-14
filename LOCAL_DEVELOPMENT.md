@@ -28,19 +28,22 @@ mkdir -p /Users/jmpark/Documents/Playground
 git clone https://github.com/whelp99-code/CFO-AIOS.git /Users/jmpark/Documents/Playground/CFO-AI
 cd /Users/jmpark/Documents/Playground/CFO-AI
 ./scripts/local-sync.sh
-cp env.example.txt .env    # DATABASE_URL, API 키 입력
-cd apps/api && pnpm db:push
+cp env.example.txt .env    # DATABASE_URL 입력 (PostgreSQL 필요)
+pnpm db:push             # repo root에서
+pnpm dev:api             # http://localhost:4000/api
 ```
+
+> **API만 설치:** `apps/web`은 `@ai-portal/*` 패키지가 없어 현재 workspace에서 제외됩니다. CFO API(`apps/api`)만 사용합니다.
 
 ### B. 이미 클론되어 있는 경우
 
 ```bash
 cd /Users/jmpark/Documents/Playground/CFO-AI
-git remote -v   # origin → whelp99-code/CFO-AIOS 확인
 git pull origin main
 ./scripts/local-sync.sh
 cp env.example.txt .env    # 최초 1회
-cd apps/api && pnpm db:generate && pnpm db:push
+pnpm db:push
+pnpm dev:api
 ```
 
 Cursor에서 **File → Open Folder** → `/Users/jmpark/Documents/Playground/CFO-AI` 를 열면 로컬 Agent가 이 경로에서 작업합니다.
@@ -67,17 +70,18 @@ Cloud Agent는 다음 턴에서 `git pull`로 반영합니다.
 
 ---
 
-## 3. 개발 서버
+## 3. 개발 서버 (CFO API)
+
+PostgreSQL이 로컬에서 실행 중이어야 `pnpm db:push`가 됩니다.
 
 ```bash
-# 터미널 1 — CFO API
-cd /Users/jmpark/Documents/Playground/CFO-AI/apps/api
-pnpm dev    # http://localhost:4000/api
-
-# 터미널 2 — Web Portal
-cd /Users/jmpark/Documents/Playground/CFO-AI/apps/web
-pnpm dev    # http://localhost:3000
+cd /Users/jmpark/Documents/Playground/CFO-AI
+cp env.example.txt .env   # DATABASE_URL=postgresql://...
+pnpm db:push
+pnpm dev:api              # http://localhost:4000/api
 ```
+
+Web Portal(`apps/web`)은 `@ai-portal/*` monorepo 패키지가 필요합니다. 현재 repo에는 포함되지 않았습니다.
 
 ---
 

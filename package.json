@@ -4,11 +4,14 @@
   "private": true,
   "description": "CFO-AIOS monorepo — local workspace: /Users/jmpark/Documents/Playground/CFO-AI",
   "scripts": {
+    "install:api": "pnpm install --filter @cfo/api...",
+    "setup:api": "pnpm install:api && pnpm --filter @cfo/api db:generate",
+    "db:push": "pnpm --filter @cfo/api db:push",
     "dev:api": "pnpm --filter @cfo/api dev",
     "dev:web": "pnpm --filter @ai-portal/web dev",
-    "dev": "pnpm run dev:api & pnpm run dev:web",
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
+    "dev": "pnpm run dev:api",
+    "build": "pnpm --filter @cfo/api build",
+    "lint": "pnpm --filter @cfo/api lint",
     "local:sync": "bash scripts/local-sync.sh"
   },
   "engines": {
