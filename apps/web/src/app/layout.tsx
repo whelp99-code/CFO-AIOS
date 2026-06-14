@@ -12,8 +12,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body className="min-h-screen antialiased">{children}</body>
+    <html lang="ko" style={{ backgroundColor: "#fafafa", color: "#18181b" }}>
+      <body
+        className="min-h-screen antialiased"
+        style={{ backgroundColor: "#fafafa", color: "#18181b", margin: 0 }}
+      >
+        {children}
+      </body>
     </html>
   );
 }

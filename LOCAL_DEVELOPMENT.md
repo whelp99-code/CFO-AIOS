@@ -37,7 +37,27 @@ CFO_API_URL=http://localhost:4000/api
 NOTION_EXPORT_DIR=/path/to/notion-export pnpm --filter @cfo/api notion:import-csv
 ```
 
-## 아키텍처
+## 문제 해결
+
+| 증상 | 해결 |
+|------|------|
+| 검은/빈 화면 | **http://localhost:5555** 로 접속 (3000 아님) |
+| API 연결 실패 | `pnpm dev:api` + PostgreSQL + `pnpm db:push` |
+| `pnpm dev`만 실행 | turbo가 api+web 동시 기동 — 터미널 로그 확인 |
+
+```bash
+# 터미널 1
+pnpm dev:api
+
+# 터미널 2
+pnpm dev:web
+```
+
+`.env`:
+```
+CFO_API_URL=http://127.0.0.1:4000/api
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cfo_aios?schema=public
+```
 
 CFO 전용 UI (Option A) — [docs/ADR-001-cfo-ui-architecture.md](./docs/ADR-001-cfo-ui-architecture.md)
 
