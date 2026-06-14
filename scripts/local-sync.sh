@@ -41,7 +41,7 @@ sync_repo() {
   echo "Next (PostgreSQL required for db:push):"
   echo "  cp env.example.txt .env    # set DATABASE_URL, CFO_API_URL"
   echo "  pnpm db:push"
-  echo "  pnpm dev                   # api:4000 + web:3000"
+  echo "  pnpm dev                   # api:4000 + web:5555"
 }
 
 # 1) 명시 경로에 Git repo가 있으면 사용

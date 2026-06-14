@@ -11,7 +11,7 @@
 ```
 CFO-AI/
 ├── apps/api/   @cfo/api  — NestJS CFO API (:4000)
-├── apps/web/   @cfo/web  — Next.js CFO UI (:3000)
+├── apps/web/   @cfo/web  — Next.js CFO UI (:5555)
 └── docs/       ADR-001 (Option A)
 ```
 
