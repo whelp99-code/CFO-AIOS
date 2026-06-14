@@ -197,10 +197,18 @@ export class ChatbotService {
   }
 
   /**
-   * OpenAI 호출이 없으면 의도 분류 → tool 실행 → 자연어 응답 생성
-   * (OpenAI 키가 있으면 이 부분을 OpenAI Function Calling으로 대체 가능)
+   * OpenAI Function Calling when OPENAI_API_KEY is set; else keyword routing.
    */
   async chat(message: string, history: { role: string; content: string }[] = []) {
+    const openAiKey = process.env.OPENAI_API_KEY?.trim();
+    if (openAiKey) {
+      const ai = await this.chatWithOpenAi(message, history, openAiKey).catch((e) => {
+        this.logger.warn(`OpenAI fallback to keywords: ${e?.message}`);
+        return null;
+      });
+      if (ai) return ai;
+    }
+
     const intent = this.classifyIntent(message);
 
     if (!intent) {
@@ -297,5 +305,74 @@ export class ChatbotService {
       data: { updatedAt: new Date() },
     });
     return result;
+  }
+
+  private async chatWithOpenAi(
+    message: string,
+    history: { role: string; content: string }[],
+    apiKey: string,
+  ) {
+    const tools = this.listTools().map((t) => ({
+      type: 'function' as const,
+      function: {
+        name: t.name,
+        description: t.description,
+        parameters: t.parameters,
+      },
+    }));
+
+    const messages = [
+      {
+        role: 'system' as const,
+        content:
+          'You are a Korean CFO assistant. Use tools for revenue, expenses, VAT, subscriptions, outstanding invoices. Reply in Korean.',
+      },
+      ...history.slice(-6).map((h) => ({ role: h.role as 'user' | 'assistant', content: h.content })),
+      { role: 'user' as const, content: message },
+    ];
+
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: process.env.OPENAI_MODEL ?? 'gpt-4o-mini',
+        messages,
+        tools,
+        tool_choice: 'auto',
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`OpenAI ${res.status}: ${await res.text()}`);
+    }
+
+    const data = (await res.json()) as any;
+    const choice = data.choices?.[0]?.message;
+    if (!choice) {
+      return { reply: this.fallbackReply(message), tool: null, toolResult: null };
+    }
+
+    const toolCall = choice.tool_calls?.[0];
+    if (toolCall?.function?.name) {
+      const args = JSON.parse(toolCall.function.arguments ?? '{}');
+      const exec = await this.executeTool(toolCall.function.name, args);
+      if (!exec.ok) {
+        return { reply: `데이터 조회 중 오류: ${exec.error}`, tool: toolCall.function.name, toolResult: null };
+      }
+      return {
+        reply: this.formatToolResult(toolCall.function.name, exec.result, message),
+        tool: toolCall.function.name,
+        toolResult: exec.result,
+      };
+    }
+
+    return {
+      reply: choice.content ?? this.fallbackReply(message),
+      tool: null,
+      toolResult: null,
+    };
   }
 }

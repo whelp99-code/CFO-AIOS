@@ -12,6 +12,8 @@
     "test": "vitest run",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
     "notion:sync": "tsx scripts/migrate-notion-to-cfo.ts",
     "notion:import-csv": "tsx scripts/import-csv-to-prisma.ts"
   },
@@ -19,6 +21,7 @@
     "@nestjs/common": "^10.3.0",
     "@nestjs/core": "^10.3.0",
     "@nestjs/platform-express": "^10.3.0",
+    "@nestjs/throttler": "^6.4.0",
     "@notionhq/client": "^2.2.15",
     "@prisma/client": "^6.19.3",
     "pg": "^8.16.0",

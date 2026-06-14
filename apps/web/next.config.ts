@@ -8,12 +8,10 @@ const monorepoRoot = path.resolve(
   "../..",
 );
 
-// Load repo-root .env so `pnpm dev` / `next start` from apps/web see DATABASE_URL.
 loadEnv({ path: path.join(monorepoRoot, ".env") });
 loadEnv({ path: path.join(monorepoRoot, ".env.local"), override: true });
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@ai-portal/automation", "@ai-portal/db", "@ai-portal/shared"],
   turbopack: {
     root: monorepoRoot,
   },
