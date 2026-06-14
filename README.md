@@ -8,7 +8,7 @@
 .
 ├── apps/
 │   ├── api/    @cfo/api   NestJS + Prisma  → :4000/api
-│   └── web/    @cfo/web   Next.js CFO UI   → :3000
+│   └── web/    @cfo/web   Next.js CFO UI   → :5555
 ├── docs/       ADR, architecture decisions
 ├── package.json
 └── pnpm-workspace.yaml
@@ -26,7 +26,7 @@ pnpm dev                  # API + Web
 ```
 
 - API: http://localhost:4000/api
-- Web: http://localhost:3000
+- Web: http://localhost:5555
 
 상세: [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)
 

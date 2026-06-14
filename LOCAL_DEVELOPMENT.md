@@ -22,7 +22,7 @@ pnpm dev
 ```
 
 - API: http://localhost:4000/api
-- Web: http://localhost:3000
+- Web: http://localhost:5555
 
 ## 환경 변수 (.env)
 

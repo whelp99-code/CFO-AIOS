@@ -19,8 +19,8 @@
     },
     "web": {
       "cwd": "apps/web",
-      "port": 3000,
-      "url": "http://localhost:3000"
+      "port": 5555,
+      "url": "http://localhost:5555"
     }
   }
 }
