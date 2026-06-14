@@ -19,10 +19,10 @@
     "@nestjs/common": "^10.3.0",
     "@nestjs/core": "^10.3.0",
     "@nestjs/platform-express": "^10.3.0",
-    "@prisma/client": "^6.19.3",
     "@notionhq/client": "^2.2.15",
-    "popbill": "^1.8.0",
+    "@prisma/client": "^6.19.3",
     "pg": "^8.16.0",
+    "popbill": "^1.8.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

@@ -1,4 +1,4 @@
-import { PrismaClient } from '/Users/jmpark/Documents/Playground/node_modules/.pnpm/@prisma+client@6.19.3_prisma@6.19.3_typescript@5.9.3__typescript@5.9.3/node_modules/.prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -85,7 +85,12 @@ function parseCsv(filePath: string): string[][] {
 }
 
 function findFile(nameContains: string): string | null {
-  const dir = '/Users/jmpark/Downloads/notion-export';
+  const dir = process.env.NOTION_EXPORT_DIR ?? '/Users/jmpark/Downloads/notion-export';
+  if (!fs.existsSync(dir)) {
+    console.error(`❌ 디렉터리가 없습니다: ${dir}`);
+    console.error('   환경변수 NOTION_EXPORT_DIR로 노션 export CSV 위치를 지정하세요.');
+    return null;
+  }
   const entries = fs.readdirSync(dir);
   for (const entry of entries) {
     if (entry.includes(nameContains) && entry.endsWith('.csv')) {
@@ -231,18 +236,32 @@ async function importCashflows() {
       project = await prisma.project.findFirst({ where: { name: { contains: projectNameClean } } });
     }
 
-    await prisma.cashflow.create({
-      data: {
-        projectId: project?.id || null,
-        counterparty: row[idx['거래처']] || null,
-        amount: parseAmount(row[idx['금액']] || ''),
-        type: row[idx['유형']] || '기타',
-        date: parseKoreanDate(row[idx['일자']] || ''),
-        memo: row[idx['메모']] || null,
-        outAccount: row[idx['출금계좌']] || null,
-        inAccount: row[idx['입금계좌']] || null,
-      },
-    });
+    if (!project) {
+      await prisma.cashflow.create({
+        data: {
+          counterparty: row[idx['거래처']] || '미상',
+          amount: parseAmount(row[idx['금액']] || ''),
+          type: row[idx['유형']] || '기타',
+          date: parseKoreanDate(row[idx['일자']] || ''),
+          memo: row[idx['메모']] || null,
+          outAccount: row[idx['출금계좌']] || null,
+          inAccount: row[idx['입금계좌']] || null,
+        },
+      });
+    } else {
+      await prisma.cashflow.create({
+        data: {
+          project: { connect: { id: project.id } },
+          counterparty: row[idx['거래처']] || '미상',
+          amount: parseAmount(row[idx['금액']] || ''),
+          type: row[idx['유형']] || '기타',
+          date: parseKoreanDate(row[idx['일자']] || ''),
+          memo: row[idx['메모']] || null,
+          outAccount: row[idx['출금계좌']] || null,
+          inAccount: row[idx['입금계좌']] || null,
+        },
+      });
+    }
   }
   console.log('자금흐름(Cashflow) import 완료');
 }
