@@ -97,13 +97,47 @@ curl -X POST http://localhost:4000/api/vat/income-tax \
   -H 'Content-Type: application/json' -d '{"taxableBase": 50000000}'
 ```
 
+### 팝빌 세금계산서 발행 (테스트 환경)
+
+```bash
+# .env에 POPBILL_LINK_ID, POPBILL_SECRET_KEY, POPBILL_IS_TEST=true, POPBILL_CORP_NUM 설정
+
+# 1) 팝빌 연동 상태 확인
+curl http://localhost:4000/api/popbill/status
+
+# 2) 세금계산서 발행 (SELL = 매출)
+curl -X POST http://localhost:4000/api/popbill/issue \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "direction": "sales",
+    "supplierCorpNum": "1234567890",
+    "supplierName": "주식회사 마이컴퍼니",
+    "buyerCorpNum": "9876543210",
+    "buyerName": "클라이언트",
+    "supplyAmount": 1000000,
+    "vatAmount": 100000,
+    "totalAmount": 1100000,
+    "issueDate": "2026-06-14",
+    "items": [{"name":"웹 개발","qty":1,"unitPrice":1000000,"amount":1000000}]
+  }'
+
+# 3) 사업자등록 상태 조회
+curl http://localhost:4000/api/popbill/biz-check/1234567890
+
+# 4) 발행 이력
+curl 'http://localhost:4000/api/popbill/history?direction=sales&limit=20'
+```
+
+> ⚠️ 팝빌 테스트 환경(`https://test.popbill.com`)에서는 실제 국세청 전송 없이 테스트 발급만 가능합니다.  
+> 운영 환경 전환 시 `POPBILL_IS_TEST=false`로 변경 후 공동인증서를 팝빌 콘솔에 등록해야 합니다.
+
 ## 환경 변수
 
-`.env.example` 참고. 핵심 변수:
+`env.example.txt` 참고. 핵심 변수:
 
 - `DATABASE_URL`: PostgreSQL 연결 문자열
 - `NOTION_API_KEY`: 노션 CSV export 후 임포트 시 사용
-- `POPBILL_LINK_ID` / `POPBILL_SECRET_KEY`: 팝빌 API (세금계산서)
+- `POPBILL_LINK_ID` / `POPBILL_SECRET_KEY` / `POPBILL_IS_TEST` / `POPBILL_CORP_NUM`: 팝빌 API (세금계산서)
 - `CODEF_CLIENT_ID` / `CODEF_CLIENT_SECRET`: CODEF API (금융 연동)
 - `OPENAI_API_KEY`: OpenAI API
 
