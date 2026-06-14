@@ -15,6 +15,17 @@
 └── packages/   # (선택) 공유 모듈
 ```
 
+## 로컬 작업 환경 (기본)
+
+**Mac 로컬 경로:** `/Users/jmpark/Documents/Playground/CFO-AI`
+
+개발·실행·DB 작업은 위 로컬 경로에서 진행합니다. Cloud Agent VM은 Git 미러입니다.
+
+- 상세: [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)
+- 동기화: `./scripts/local-sync.sh`
+
+Cursor Desktop에서 해당 폴더를 열고 **Local Agent**를 사용하세요.
+
 ## 빠른 시작
 
 ### 1. 의존성 설치
