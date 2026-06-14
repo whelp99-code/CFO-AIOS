@@ -27,8 +27,9 @@ sync_repo() {
   git fetch origin
   git pull origin main
 
-  echo "📦 pnpm install..."
-  pnpm install
+  echo "📦 Installing CFO API dependencies..."
+  export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+  pnpm install --filter @cfo/api...
 
   if [[ -f apps/api/prisma/schema.prisma ]]; then
     echo "🗄️  Prisma generate..."
@@ -37,9 +38,12 @@ sync_repo() {
 
   echo "✅ Sync complete."
   echo ""
-  echo "Next:"
-  echo "  cd apps/api && pnpm dev   # http://localhost:4000"
-  echo "  cd apps/web && pnpm dev   # http://localhost:3000"
+  echo "Next (PostgreSQL required for db:push):"
+  echo "  cp env.example.txt .env    # set DATABASE_URL"
+  echo "  pnpm db:push               # from repo root"
+  echo "  pnpm dev:api               # http://localhost:4000/api"
+  echo ""
+  echo "Note: apps/web needs @ai-portal/* packages — use API-only setup for now."
 }
 
 # 1) 명시 경로에 Git repo가 있으면 사용

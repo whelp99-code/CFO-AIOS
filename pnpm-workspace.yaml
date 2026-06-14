@@ -1,3 +1,5 @@
 packages:
-  - "apps/*"
+  - "apps/api"
+  # apps/web needs @ai-portal/* under packages/ — enable when those packages exist:
+  # - "apps/web"
   - "packages/*"
