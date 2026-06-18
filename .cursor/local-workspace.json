@@ -14,8 +14,8 @@
   "services": {
     "api": {
       "cwd": "apps/api",
-      "port": 4000,
-      "url": "http://localhost:4000/api"
+      "port": 4100,
+      "url": "http://localhost:4100/api"
     },
     "web": {
       "cwd": "apps/web",

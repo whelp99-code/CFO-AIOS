@@ -7,7 +7,7 @@
 ```
 .
 ├── apps/
-│   ├── api/    @cfo/api   NestJS + Prisma  → :4000/api
+│   ├── api/    @cfo/api   NestJS + Prisma  → :4100/api
 │   └── web/    @cfo/web   Next.js CFO UI   → :5555
 ├── docs/       ADR, architecture decisions
 ├── package.json
@@ -25,7 +25,7 @@ pnpm db:push
 pnpm dev                  # API + Web
 ```
 
-- API: http://localhost:4000/api
+- API: http://localhost:4100/api
 - Web: http://localhost:5555
 
 상세: [LOCAL_DEVELOPMENT.md](./LOCAL_DEVELOPMENT.md)
@@ -35,7 +35,7 @@ pnpm dev                  # API + Web
 | 변수 | 설명 |
 |------|------|
 | `DATABASE_URL` | PostgreSQL |
-| `CFO_API_URL` | Web → API (`http://localhost:4000/api`) |
+| `CFO_API_URL` | Web → API (`http://localhost:4100/api`) |
 | `API_KEY` | (선택) API `X-API-Key` 보호 |
 | `OPENAI_API_KEY` | (선택) 챗봇 Function Calling |
 | `POPBILL_*` | 세금계산서 |
