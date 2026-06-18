@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const CFO_API = (process.env.CFO_API_URL ?? "http://127.0.0.1:4000/api").replace(
+const CFO_API = (process.env.CFO_API_URL ?? "http://127.0.0.1:4100/api").replace(
   "localhost",
   "127.0.0.1",
 );

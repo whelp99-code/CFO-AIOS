@@ -21,14 +21,14 @@ pnpm db:push
 pnpm dev
 ```
 
-- API: http://localhost:4000/api
+- API: http://localhost:4100/api
 - Web: http://localhost:5555
 
 ## 환경 변수 (.env)
 
 ```
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cfo_aios?schema=public
-CFO_API_URL=http://localhost:4000/api
+CFO_API_URL=http://localhost:4100/api
 ```
 
 ## 노션 CSV import
@@ -101,7 +101,7 @@ pnpm dev:web
 
 `.env`:
 ```
-CFO_API_URL=http://127.0.0.1:4000/api
+CFO_API_URL=http://127.0.0.1:4100/api
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cfo_aios?schema=public
 ```
 
