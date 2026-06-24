@@ -61,9 +61,9 @@ export class LedgerService {
   async postInvoiceIssued(invoiceId: string) {
     const invoice = await this.prisma.invoice.findUnique({ where: { id: invoiceId } });
     if (!invoice) throw new BadRequestException('인보이스 없음');
-    const total = (invoice.supplierCost ?? 0) + (invoice.vat ?? 0);
+    const total = (invoice.amount ?? 0) + (invoice.vat ?? 0);
     const vat = invoice.vat ?? 0;
-    const supply = invoice.supplierCost ?? 0;
+    const supply = invoice.amount ?? 0;
     if (total <= 0) return null;
 
     return this.prisma.$transaction([
@@ -98,7 +98,7 @@ export class LedgerService {
   async postInvoicePaid(invoiceId: string) {
     const invoice = await this.prisma.invoice.findUnique({ where: { id: invoiceId } });
     if (!invoice) return null;
-    const total = (invoice.supplierCost ?? 0) + (invoice.vat ?? 0);
+    const total = (invoice.amount ?? 0) + (invoice.vat ?? 0);
     if (total <= 0) return null;
     return this.prisma.ledgerEntry.create({
       data: {
@@ -119,7 +119,7 @@ export class LedgerService {
   async postExpense(expenseId: string) {
     const e = await this.prisma.expense.findUnique({ where: { id: expenseId } });
     if (!e) return null;
-    const supply = e.supplierCost ?? 0;
+    const supply = e.amount ?? 0;
     const vat = e.vat ?? 0;
     const total = supply + vat;
     if (total <= 0) return null;

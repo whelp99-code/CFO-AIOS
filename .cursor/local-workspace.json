@@ -1,7 +1,7 @@
 {
   "$schema": "https://cursor.com/schemas/local-workspace.v1.json",
   "primary": true,
-  "path": "/Users/jmpark/Documents/Playground/CFO-AI",
+  "path": "/Users/jmpark/Playground/CFO-AI",
   "remote": {
     "name": "origin",
     "url": "https://github.com/whelp99-code/cfo-aios.git",

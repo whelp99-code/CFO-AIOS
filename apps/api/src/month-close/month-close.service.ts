@@ -26,21 +26,21 @@ export class MonthCloseService {
 
     const outstanding = await this.prisma.invoice.aggregate({
       where: { depositStatus: { not: '완료' } },
-      _sum: { supplierCost: true, vat: true },
+      _sum: { amount: true, vat: true },
     });
 
     const totalRevenue = await this.prisma.invoice.aggregate({
       where: { depositDate: { gte: start, lte: end }, depositStatus: '완료' },
-      _sum: { supplierCost: true, vat: true },
+      _sum: { amount: true, vat: true },
     });
 
     const totalExpense = await this.prisma.expense.aggregate({
       where: { date: { gte: start, lte: end }, isPaid: true },
-      _sum: { supplierCost: true, vat: true },
+      _sum: { amount: true, vat: true },
     });
 
-    const revenue = (totalRevenue._sum.supplierCost ?? 0) + (totalRevenue._sum.vat ?? 0);
-    const expense = (totalExpense._sum.supplierCost ?? 0) + (totalExpense._sum.vat ?? 0);
+    const revenue = (totalRevenue._sum.amount ?? 0) + (totalRevenue._sum.vat ?? 0);
+    const expense = (totalExpense._sum.amount ?? 0) + (totalExpense._sum.vat ?? 0);
     const netIncome = revenue - expense;
 
     const items = [
@@ -70,7 +70,7 @@ export class MonthCloseService {
         totalExpense: Math.round(expense),
         netIncome: Math.round(netIncome),
         uncategorizedCount: uncategorizedExpenses,
-        outstandingAmount: Math.round((outstanding._sum.supplierCost ?? 0) + (outstanding._sum.vat ?? 0)),
+        outstandingAmount: Math.round((outstanding._sum.amount ?? 0) + (outstanding._sum.vat ?? 0)),
       },
     };
   }

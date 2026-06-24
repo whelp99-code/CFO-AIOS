@@ -3,7 +3,7 @@ import { LedgerService } from '../ledger/ledger.service';
 
 export class CreateInvoiceDto {
   projectId?: string;
-  supplierCost?: number;
+  amount?: number;
   depositAmount?: number;
   depositStatus?: string;
   depositDate?: string;
@@ -13,7 +13,7 @@ export class CreateInvoiceDto {
 
 export class UpdateInvoiceDto {
   projectId?: string;
-  supplierCost?: number;
+  amount?: number;
   depositAmount?: number;
   depositStatus?: string;
   depositDate?: string;
@@ -54,12 +54,12 @@ export class InvoicesService {
   }
 
   async create(dto: CreateInvoiceDto) {
-    const supply = dto.supplierCost ?? 0;
+    const supply = dto.amount ?? 0;
     const vat = this.calcVat(supply);
     const invoice = await this.prisma.invoice.create({
       data: {
         projectId: dto.projectId,
-        supplierCost: supply,
+        amount: supply,
         depositAmount: dto.depositAmount,
         depositStatus: dto.depositStatus ?? '미수',
         depositDate: dto.depositDate ? new Date(dto.depositDate) : null,
@@ -78,13 +78,13 @@ export class InvoicesService {
 
   async update(id: string, dto: UpdateInvoiceDto) {
     const existing = await this.get(id);
-    const supply = dto.supplierCost ?? existing.supplierCost ?? 0;
+    const supply = dto.amount ?? existing.amount ?? 0;
     const vat = this.calcVat(supply);
     const updated = await this.prisma.invoice.update({
       where: { id },
       data: {
         projectId: dto.projectId,
-        supplierCost: dto.supplierCost,
+        amount: dto.amount,
         depositAmount: dto.depositAmount,
         depositStatus: dto.depositStatus,
         depositDate: dto.depositDate ? new Date(dto.depositDate) : undefined,
@@ -99,5 +99,10 @@ export class InvoicesService {
       await this.ledger.postInvoicePaid(id).catch(() => null);
     }
     return updated;
+  }
+
+  async delete(id: string) {
+    await this.get(id);
+    return this.prisma.invoice.delete({ where: { id } });
   }
 }

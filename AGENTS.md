@@ -3,7 +3,7 @@
 ## Primary workspace (local)
 
 ```
-/Users/jmpark/Documents/Playground/CFO-AI
+/Users/jmpark/Playground/CFO-AI
 ```
 
 ## Monorepo

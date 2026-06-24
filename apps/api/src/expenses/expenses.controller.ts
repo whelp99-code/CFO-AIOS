@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CreateExpenseDto, ExpensesService, UpdateExpenseDto } from './expenses.service';
 
 @Controller('expenses')
@@ -33,5 +33,10 @@ export class ExpensesController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() body: UpdateExpenseDto) {
     return this.service.update(id, body);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.service.delete(id);
   }
 }

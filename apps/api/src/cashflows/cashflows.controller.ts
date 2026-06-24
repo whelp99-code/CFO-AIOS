@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { CashflowsService, CreateCashflowDto } from './cashflows.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { CashflowsService, CreateCashflowDto, UpdateCashflowDto } from './cashflows.service';
 
 @Controller('cashflows')
 export class CashflowsController {
@@ -26,5 +26,15 @@ export class CashflowsController {
   @Post()
   create(@Body() body: CreateCashflowDto) {
     return this.service.create(body);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() body: UpdateCashflowDto) {
+    return this.service.update(id, body);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.service.delete(id);
   }
 }

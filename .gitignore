@@ -41,6 +41,8 @@ attachments/
 # Prisma
 prisma/*.db
 prisma/*.db-journal
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
 
 # Notion export 데이터 (import된 후 불필요)
 notion-export/

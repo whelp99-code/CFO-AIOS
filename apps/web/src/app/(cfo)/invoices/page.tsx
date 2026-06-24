@@ -1,50 +1,63 @@
-import { cfoFetch, formatKrw } from "@/lib/cfo-client";
+"use client";
 
-type Invoice = {
-  id: string;
-  buyer: string | null;
-  supplierCost: number | null;
-  vat: number | null;
-  total: number | null;
-  depositStatus: string;
-  depositDate: string | null;
-};
+import CrudTable from "@/components/cfo/crud-table";
 
-export default async function InvoicesPage() {
-  let invoices: Invoice[] = [];
-  let error: string | null = null;
-  try {
-    invoices = await cfoFetch<Invoice[]>("invoices?limit=50");
-  } catch (e: unknown) {
-    error = e instanceof Error ? e.message : "API 오류";
-  }
+const INVOICE_FIELDS = [
+  { name: "buyer", label: "거래처", type: "text" as const, required: true },
+  { name: "amount", label: "금액", type: "number" as const, required: true, step: 1000 },
+  { name: "depositAmount", label: "입금액", type: "number" as const, step: 1000 },
+  {
+    name: "depositStatus",
+    label: "입금상태",
+    type: "select" as const,
+    options: [
+      { value: "미수", label: "미수" },
+      { value: "부분", label: "부분입금" },
+      { value: "완료", label: "입금완료" },
+    ],
+  },
+  { name: "depositDate", label: "입금일", type: "date" as const },
+  { name: "memo", label: "메모", type: "text" as const },
+];
 
+const INVOICE_COLUMNS = [
+  { key: "buyer", label: "거래처" },
+  { key: "amount", label: "금액", format: (v: number) => `₩${(v ?? 0).toLocaleString()}` },
+  { key: "depositAmount", label: "입금액", format: (v: number) => `₩${(v ?? 0).toLocaleString()}` },
+  {
+    key: "depositStatus",
+    label: "입금상태",
+    format: (v: string) => (
+      <span
+        className={`rounded px-2 py-0.5 text-xs font-medium ${
+          v === "완료"
+            ? "bg-green-100 text-green-700"
+            : v === "부분"
+            ? "bg-yellow-100 text-yellow-700"
+            : "bg-red-100 text-red-700"
+        }`}
+      >
+        {v}
+      </span>
+    ),
+  },
+  {
+    key: "depositDate",
+    label: "입금일",
+    format: (v: string) => (v ? new Date(v).toLocaleDateString("ko-KR") : "-"),
+  },
+];
+
+export default function InvoicesPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">미수금 / 인보이스</h1>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <div className="overflow-x-auto rounded-lg border bg-white">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-zinc-50 text-left">
-              <th className="p-3">거래처</th>
-              <th className="p-3">공급가</th>
-              <th className="p-3">합계</th>
-              <th className="p-3">입금상태</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoices.map((inv) => (
-              <tr key={inv.id} className="border-b">
-                <td className="p-3">{inv.buyer ?? "-"}</td>
-                <td className="p-3">{formatKrw(inv.supplierCost ?? 0)}</td>
-                <td className="p-3">{formatKrw(inv.total ?? 0)}</td>
-                <td className="p-3">{inv.depositStatus}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <CrudTable
+        title=""
+        endpoint="invoices"
+        fields={INVOICE_FIELDS}
+        columns={INVOICE_COLUMNS}
+      />
     </div>
   );
 }

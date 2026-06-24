@@ -4,7 +4,7 @@ import { LedgerService } from '../ledger/ledger.service';
 export class CreateExpenseDto {
   projectId?: string;
   expenseName!: string;
-  supplierCost?: number;
+  supplyAmount?: number;
   category?: string;
   vendor?: string;
   date?: string;
@@ -16,7 +16,7 @@ export class CreateExpenseDto {
 export class UpdateExpenseDto {
   projectId?: string;
   expenseName?: string;
-  supplierCost?: number;
+  supplyAmount?: number;
   category?: string;
   vendor?: string;
   date?: string;
@@ -64,13 +64,13 @@ export class ExpensesService {
   }
 
   async create(dto: CreateExpenseDto) {
-    const supply = dto.supplierCost ?? 0;
+    const supply = dto.supplyAmount ?? 0;
     const vat = this.calcVat(supply);
     const expense = await this.prisma.expense.create({
       data: {
         projectId: dto.projectId,
         expenseName: dto.expenseName,
-        supplierCost: supply,
+        supplyAmount: supply,
         category: dto.category ?? '기타',
         vendor: dto.vendor,
         date: dto.date ? new Date(dto.date) : new Date(),
@@ -90,14 +90,14 @@ export class ExpensesService {
 
   async update(id: string, dto: UpdateExpenseDto) {
     const existing = await this.get(id);
-    const supply = dto.supplierCost ?? existing.supplierCost ?? 0;
+    const supply = dto.supplyAmount ?? existing.supplyAmount ?? 0;
     const vat = this.calcVat(supply);
     const updated = await this.prisma.expense.update({
       where: { id },
       data: {
         projectId: dto.projectId,
         expenseName: dto.expenseName,
-        supplierCost: dto.supplierCost,
+        supplyAmount: dto.supplyAmount,
         category: dto.category,
         vendor: dto.vendor,
         date: dto.date ? new Date(dto.date) : undefined,
@@ -113,5 +113,10 @@ export class ExpensesService {
       await this.ledger.postExpense(id).catch(() => null);
     }
     return updated;
+  }
+
+  async delete(id: string) {
+    await this.get(id);
+    return this.prisma.expense.delete({ where: { id } });
   }
 }

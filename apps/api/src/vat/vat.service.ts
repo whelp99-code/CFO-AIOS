@@ -75,7 +75,7 @@ export class VatService {
     );
     const additionalInvoices = paidInvoices.filter((i) => !linkedTaxIds.has(i.id));
     const additionalSupply = additionalInvoices.reduce(
-      (s, i) => s + (i.supplierCost ?? 0),
+      (s, i) => s + (i.amount ?? 0),
       0,
     );
     const additionalVat = additionalInvoices.reduce((s, i) => s + (i.vat ?? 0), 0);
@@ -111,7 +111,7 @@ export class VatService {
       (e) => !linkedExpenseIds.has(e.id),
     );
     const additionalPurchaseSupply = additionalExpenses.reduce(
-      (s, e) => s + (e.supplierCost ?? 0),
+      (s, e) => s + (e.amount ?? 0),
       0,
     );
     const additionalPurchaseVat = additionalExpenses.reduce(

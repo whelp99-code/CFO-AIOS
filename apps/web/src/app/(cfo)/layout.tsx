@@ -4,6 +4,7 @@ const NAV = [
   { href: "/dashboard", label: "대시보드" },
   { href: "/invoices", label: "미수금" },
   { href: "/expenses", label: "비용" },
+  { href: "/cashflows", label: "자금흐름" },
   { href: "/vat", label: "부가세" },
   { href: "/subscriptions", label: "구독" },
   { href: "/month-close", label: "월 마감" },

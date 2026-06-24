@@ -31,7 +31,7 @@ export class ChatbotService {
         const rows = await this.prisma.invoice.findMany({
           where: { depositDate: { gte: start, lte: end }, depositStatus: '완료' },
         });
-        const total = rows.reduce((s, r) => s + (r.supplierCost ?? 0) + (r.vat ?? 0), 0);
+        const total = rows.reduce((s, r) => s + (r.amount ?? 0) + (r.vat ?? 0), 0);
         return { year, month, count: rows.length, totalAmount: Math.round(total) };
       },
     });
@@ -50,7 +50,7 @@ export class ChatbotService {
         const rows = await this.prisma.expense.findMany({
           where: { date: { gte: start, lte: end }, isPaid: true },
         });
-        const total = rows.reduce((s, r) => s + (r.supplierCost ?? 0) + (r.vat ?? 0), 0);
+        const total = rows.reduce((s, r) => s + (r.amount ?? 0) + (r.vat ?? 0), 0);
         return { year, month, count: rows.length, totalAmount: Math.round(total) };
       },
     });
@@ -68,7 +68,7 @@ export class ChatbotService {
         return rows.map((r) => ({
           id: r.id,
           buyer: r.buyer,
-          amount: Math.round((r.supplierCost ?? 0) + (r.vat ?? 0)),
+          amount: Math.round((r.amount ?? 0) + (r.vat ?? 0)),
           status: r.depositStatus,
         }));
       },
@@ -92,7 +92,7 @@ export class ChatbotService {
         const map: Record<string, number> = {};
         for (const r of rows) {
           const cat = r.category ?? '기타';
-          map[cat] = (map[cat] ?? 0) + (r.supplierCost ?? 0) + (r.vat ?? 0);
+          map[cat] = (map[cat] ?? 0) + (r.amount ?? 0) + (r.vat ?? 0);
         }
         return Object.entries(map)
           .map(([category, amount]) => ({ category, amount: Math.round(amount) }))

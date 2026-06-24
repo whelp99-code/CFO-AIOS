@@ -17,7 +17,7 @@
 ## Mac 로컬 빠른 시작
 
 ```bash
-cd /Users/jmpark/Documents/Playground/CFO-AI
+cd /Users/jmpark/Playground/CFO-AI
 git pull origin main
 ./scripts/local-sync.sh
 cp env.example.txt .env   # DATABASE_URL, CFO_API_URL

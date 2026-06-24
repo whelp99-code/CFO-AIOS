@@ -11,6 +11,17 @@ export class CreateCashflowDto {
   memo?: string;
 }
 
+export class UpdateCashflowDto {
+  projectId?: string;
+  counterparty?: string;
+  amount?: number;
+  type?: string;
+  outAccount?: string;
+  inAccount?: string;
+  date?: string;
+  memo?: string;
+}
+
 @Injectable()
 export class CashflowsService {
   constructor(@Inject('PRISMA') private readonly prisma: any) {}
@@ -51,5 +62,28 @@ export class CashflowsService {
       },
       include: { project: true },
     });
+  }
+
+  async update(id: string, dto: UpdateCashflowDto) {
+    await this.get(id);
+    return this.prisma.cashflow.update({
+      where: { id },
+      data: {
+        ...(dto.projectId !== undefined && { projectId: dto.projectId }),
+        ...(dto.counterparty !== undefined && { counterparty: dto.counterparty }),
+        ...(dto.amount !== undefined && { amount: dto.amount, cashChange: dto.amount }),
+        ...(dto.type !== undefined && { type: dto.type }),
+        ...(dto.outAccount !== undefined && { outAccount: dto.outAccount }),
+        ...(dto.inAccount !== undefined && { inAccount: dto.inAccount }),
+        ...(dto.date !== undefined && { date: dto.date ? new Date(dto.date) : null }),
+        ...(dto.memo !== undefined && { memo: dto.memo }),
+      },
+      include: { project: true },
+    });
+  }
+
+  async delete(id: string) {
+    await this.get(id);
+    return this.prisma.cashflow.delete({ where: { id } });
   }
 }
